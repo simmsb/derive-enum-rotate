@@ -188,20 +188,6 @@ pub fn derive_enum_rotate(input: TokenStream) -> TokenStream {
                         #( Self::#map_to => Self::#map_from, )*
                     }
                 }
-
-                fn iter() -> impl Iterator<Item=Self> {
-                    vec![ #( Self::#map_from ),* ].into_iter()
-                }
-
-                fn iter_from(&self) -> impl Iterator<Item=Self> {
-                    let mut vars = vec![ #( Self::#map_from ),* ];
-                    let index = vars.iter().position(|var| {
-                        ::std::mem::discriminant(var) == ::std::mem::discriminant(self)
-                    }).unwrap();
-
-                    vars.rotate_left(index);
-                    vars.into_iter()
-                }
             }
         }
     };
