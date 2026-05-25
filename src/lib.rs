@@ -137,7 +137,7 @@ pub fn derive_enum_rotate(input: TokenStream) -> TokenStream {
     let tokens = if variants.is_empty() {
         // Special case for empty enums
         quote! {
-            impl ::enum_rotate::EnumRotate for #name {
+            impl #name {
                 fn next(&self) -> Self {
                     unsafe {
                         ::std::hint::unreachable_unchecked()
@@ -148,19 +148,6 @@ pub fn derive_enum_rotate(input: TokenStream) -> TokenStream {
                     unsafe {
                         ::std::hint::unreachable_unchecked()
                     }
-                }
-
-                fn iter() -> impl Iterator<Item=Self> {
-                    ::std::iter::empty()
-                }
-
-                fn iter_from(&self) -> impl Iterator<Item=Self> {
-                    unsafe {
-                        ::std::hint::unreachable_unchecked();
-                    }
-                    // This is necessary because "() is not an iterator"
-                    #[allow(unreachable_code)]
-                    ::std::iter::empty()
                 }
             }
         }
@@ -176,14 +163,14 @@ pub fn derive_enum_rotate(input: TokenStream) -> TokenStream {
         };
 
         quote! {
-            impl ::enum_rotate::EnumRotate for #name {
-                fn next(&self) -> Self {
+            impl #name {
+                pub fn next(&self) -> Self {
                     match self {
                         #( Self::#map_from => Self::#map_to, )*
                     }
                 }
 
-                fn prev(&self) -> Self {
+                pub fn prev(&self) -> Self {
                     match self {
                         #( Self::#map_to => Self::#map_from, )*
                     }
